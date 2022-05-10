@@ -35,7 +35,11 @@ class Startup
 			var request = client.GetAsync(url);
 			if (request.Result.StatusCode.ToString().Contains("OK"))
 			{
-				var members = File.ReadLines(@"Members.txt.txt");
+				try {
+					members = File.ReadLines(@"Members.txt.txt");
+				} catch (Exception e) {
+					members = File.ReadLines(@"Members.txt");
+				}
 				foreach (var member in members) 
 				{
 					var massTimeout = await client.PatchAsync($"https://discord.com/api/v9/guilds/{guild}/members/{member}",content:JsonContent.Create(new {communication_disabled_until=$"{muteDate}"}));
