@@ -13,11 +13,11 @@ class Startup
 		Console.ForegroundColor = ConsoleColor.Blue;
 		Console.WriteLine("Acid MassTimeout.");
 		Console.ForegroundColor = ConsoleColor.Red;
-		Console.WriteLine("Enter Token: ");
+		Console.Write("Enter Token: ");
 		Console.ForegroundColor = ConsoleColor.White;
 		string AccountToken = Console.ReadLine().ToString();
 		Console.ForegroundColor = ConsoleColor.Red;
-		Console.WriteLine("Enter Guild ID That You Want To Mass-Timeout: ");
+		Console.Write("Enter Guild ID That You Want To Mass-Timeout: ");
 		Console.ForegroundColor = ConsoleColor.White;
 		string TimeoutingGuild = Console.ReadLine().ToString();
 		Console.ForegroundColor = ConsoleColor.Blue;
@@ -26,6 +26,7 @@ class Startup
 	}
 	static async Task StartAsync(string token,string guild) 
 	{
+		var members;
 		string url = "https://discord.com/api/v9/users/@me";
 		var muteDate = DateTime.Now.AddSeconds(2240000).ToString("o");
 		using (HttpClient client = new HttpClient()) 
@@ -48,7 +49,11 @@ class Startup
 			{
 				client.DefaultRequestHeaders.Remove("Authorization");
 				client.DefaultRequestHeaders.Add("Authorization",$"Bot {token}");
-				var members = File.ReadLines(@"Members.txt.txt");
+				try {
+					members = File.ReadLines(@"Members.txt.txt");
+				} catch (Exception e) {
+					members = File.ReadLines(@"Members.txt");
+				}
 				foreach (var member in members) 
 				{
 					var massTimeout = await client.PatchAsync($"https://discord.com/api/v9/guilds/{guild}/members/{member}",content:JsonContent.Create(new {communication_disabled_until=$"{muteDate}"}));
